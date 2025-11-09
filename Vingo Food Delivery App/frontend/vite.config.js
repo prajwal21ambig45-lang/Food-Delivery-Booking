@@ -6,6 +6,14 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    chunkSizeWarningLimit: 2000, // This removes the chunk size warning forever
+    chunkSizeWarningLimit: 5000, // Kills the warning forever (5 MB limit)
+    rollupOptions: {
+      output: {
+        // Optional: nicer file names in production
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   },
 })
