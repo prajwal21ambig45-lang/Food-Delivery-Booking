@@ -17,15 +17,14 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// ALL POSSIBLE FRONTEND DOMAINS (Render + Vercel + Local)
+// ALL FRONTEND URLs — INCLUDING YOUR CURRENT RENDER ONE
 const allowedOrigins = [
-  "https://vingo-food-track.onrender.com",     // Your current Render frontend
-  "https://vingo-sandy.vercel.app",            // Your Vercel frontend
-  "https://food-delivery-booking.onrender.com", // If you ever open backend directly
+  "https://vingo-food-track.onrender.com",     // ← THIS IS YOUR CURRENT FRONTEND
+  "https://vingo-sandy.vercel.app",            // Vercel
   "http://localhost:5173",
   "http://localhost:3000",
-  process.env.FRONTEND_URL?.trim(),            // From .env (optional)
-].filter(Boolean); // removes empty strings
+  process.env.FRONTEND_URL?.trim(),
+].filter(Boolean);
 
 // SOCKET.IO CORS
 const io = new Server(server, {
@@ -38,17 +37,14 @@ const io = new Server(server, {
 
 app.set("io", io);
 
-// EXPRESS CORS (same origins)
+// EXPRESS CORS — NOW WITH CALLBACK (WORKS 100%)
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (Postman, mobile apps)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        console.log("Blocked by CORS:", origin); // Debug log
+        console.log("CORS BLOCKED ORIGIN:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
@@ -59,26 +55,23 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// API Routes
+// Routes
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter);
 app.use("/api/order", orderRouter);
 
-// Health check
 app.get("/", (req, res) => {
-  res.send("Vingo Food Delivery Backend is LIVE! CORS fixed!");
+  res.send("VINGO BACKEND LIVE — CORS FIXED FOR vingo-food-track.onrender.com");
 });
 
-// Socket handler
 socketHandler(io);
 
-// Start server
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, async () => {
   await connectDb();
-  console.log(`Server running on port ${PORT}`);
-  console.log("Allowed origins:", allowedOrigins.join(" | "));
+  console.log(`Server running on https://food-delivery-booking.onrender.com:${PORT}`);
+  console.log("Allowed origins:", allowedOrigins);
 });
