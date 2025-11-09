@@ -21,8 +21,8 @@ const server = http.createServer(app);
 
 // Allow both local and deployed frontend origins
 const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.FRONTEND_URL || "https://your-frontend.onrender.com",
+  "https://vingo-sandy.vercel.app/",
+  process.env.FRONTEND_URL || "https://vingo-sandy.vercel.app/",
 ];
 
 const io = new Server(server, {
