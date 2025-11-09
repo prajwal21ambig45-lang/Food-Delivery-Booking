@@ -61,7 +61,7 @@ app.get("/", (req, res) => {
 socketHandler(io);
 
 // Database + Server start
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000 || "https://food-delivery-booking.onrender.com";
 server.listen(PORT, async () => {
   await connectDb();
   console.log(`✅ Server started at port ${PORT}`);
